@@ -1,16 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import styled from "styled-components";
 import type { Photo } from "@/types/photo";
 
 interface PhotoCardProps {
   photo: Photo;
-  onClick: () => void;
 }
 
-export function PhotoCard({ photo, onClick }: PhotoCardProps) {
+export function PhotoCard({ photo }: PhotoCardProps) {
   return (
-    <Card onClick={onClick}>
+    <Card href={`/photos/${photo.id}`}>
       <ImageWrapper>
         <Image src={photo.src} alt={photo.title} />
       </ImageWrapper>
@@ -22,13 +22,16 @@ export function PhotoCard({ photo, onClick }: PhotoCardProps) {
   );
 }
 
-const Card = styled.div`
+const Card = styled(Link)`
   background: #161616;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 
   &:hover {
     transform: translateY(-3px);

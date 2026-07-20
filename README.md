@@ -1,6 +1,6 @@
 # my-photo-gallery
 
-猫ちゃんの写真を一覧表示するギャラリーアプリです。グリッド表示、拡大表示、アップロード（ブラウザ内のみ、リロードで消える）に対応しています。
+猫ちゃんの写真を一覧表示するギャラリーアプリです。グリッド表示、詳細ページへの画面遷移、アップロード（ブラウザ内のみ、リロードで消える）に対応しています。
 
 ## 技術スタック
 
@@ -14,12 +14,18 @@
 ```
 src/
 ├── app/                    # ルーティング・レイアウト
-│   ├── layout.tsx
-│   ├── page.tsx            # 状態管理とコンポーネント組み立て
+│   ├── layout.tsx          # PhotosProvider でラップ
+│   ├── page.tsx            # 画像一覧
+│   ├── photos/
+│   │   └── [id]/
+│   │       └── page.tsx    # 画像詳細（/photos/[id]）
 │   └── globals.css
 ├── components/
-│   ├── gallery/            # ギャラリー関連 UI
-│   └── modals/             # モーダル UI
+│   ├── gallery/            # 一覧 UI（Header / Grid / Card）
+│   ├── photos/             # 詳細 UI（PhotoDetail）
+│   └── modals/             # アップロード用モーダル
+├── context/
+│   └── PhotosContext.tsx   # 写真一覧の共有 state
 ├── data/
 │   └── initialPhotos.ts    # 初期画像データ
 └── types/
@@ -37,13 +43,15 @@ public/
 npm run dev
 ```
 
-[http://localhost:3000](http://localhost:3000) を開いて確認できます。
+[http://localhost:3000](http://localhost:3000) を開いて確認できます。画像をクリックすると `/photos/[id]` の詳細ページへ遷移します。
 
 主な編集ポイント:
 
-- ページの状態管理: `src/app/page.tsx`
+- 画像一覧: `src/app/page.tsx`
+- 画像詳細: `src/app/photos/[id]/page.tsx` / `src/components/photos/`
+- 写真の共有 state: `src/context/PhotosContext.tsx`
 - ギャラリー UI: `src/components/gallery/`
-- モーダル UI: `src/components/modals/`
+- アップロード UI: `src/components/modals/`
 - 初期データ: `src/data/initialPhotos.ts`
 
 ## Scripts

@@ -6,14 +6,13 @@ import { PhotoCard } from "@/components/gallery/PhotoCard";
 
 interface GalleryGridProps {
   images: Photo[];
-  onPhotoClick: (photo: Photo) => void;
 }
 
-export function GalleryGrid({ images, onPhotoClick }: GalleryGridProps) {
+export function GalleryGrid({ images }: GalleryGridProps) {
   return (
     <Grid>
       {images.map((img) => (
-        <PhotoCard key={img.id} photo={img} onClick={() => onPhotoClick(img)} />
+        <PhotoCard key={img.id} photo={img} />
       ))}
     </Grid>
   );
