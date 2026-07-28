@@ -4,14 +4,12 @@ import { useState } from "react";
 import styled from "styled-components";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { GalleryHeader } from "@/components/gallery/GalleryHeader";
-import { PhotoViewModal } from "@/components/modals/PhotoViewModal";
 import { UploadModal } from "@/components/modals/UploadModal";
-import { initialPhotos } from "@/data/initialPhotos";
+import { usePhotos } from "@/context/PhotosContext";
 import type { Photo } from "@/types/photo";
 
 export default function Home() {
-  const [images, setImages] = useState<Photo[]>(initialPhotos);
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const { images, addPhoto } = usePhotos();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -49,18 +47,14 @@ export default function Home() {
       date: formattedDate,
     };
 
-    setImages([...images, newPhoto]);
+    addPhoto(newPhoto);
     handleCloseUpload();
   };
 
   return (
     <AppContainer>
       <GalleryHeader onUploadClick={() => setIsUploadOpen(true)} />
-      <GalleryGrid images={images} onPhotoClick={setSelectedPhoto} />
-
-      {selectedPhoto && (
-        <PhotoViewModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
-      )}
+      <GalleryGrid images={images} />
 
       {isUploadOpen && (
         <UploadModal
