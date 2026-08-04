@@ -6,7 +6,6 @@ import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { GalleryHeader } from "@/components/gallery/GalleryHeader";
 import { UploadModal } from "@/components/modals/UploadModal";
 import { usePhotos } from "@/context/PhotosContext";
-import type { Photo } from "@/types/photo";
 
 export default function Home() {
   const { images, addPhoto } = usePhotos();
@@ -26,7 +25,7 @@ export default function Home() {
     setNewTitle("");
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!newTitle.trim()) {
       alert("タイトルを入力してください");
       return;
@@ -40,14 +39,11 @@ export default function Home() {
     const formattedDate = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, "0")}/${String(today.getDate()).padStart(2, "0")}`;
     const imageUrl = URL.createObjectURL(selectedFile);
 
-    const newPhoto: Photo = {
-      id: images.length + 1,
+    await addPhoto({
       src: imageUrl,
       title: newTitle,
       date: formattedDate,
-    };
-
-    addPhoto(newPhoto);
+    });
     handleCloseUpload();
   };
 
