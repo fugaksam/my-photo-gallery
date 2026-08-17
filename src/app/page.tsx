@@ -37,14 +37,17 @@ export default function Home() {
 
     const today = new Date();
     const formattedDate = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, "0")}/${String(today.getDate()).padStart(2, "0")}`;
-    const imageUrl = URL.createObjectURL(selectedFile);
 
-    await addPhoto({
-      src: imageUrl,
-      title: newTitle,
-      date: formattedDate,
-    });
-    handleCloseUpload();
+    try {
+      await addPhoto({
+        title: newTitle,
+        date: formattedDate,
+        file: selectedFile,
+      });
+      handleCloseUpload();
+    } catch {
+      alert("アップロードに失敗しました。BE が起動しているか確認してください。");
+    }
   };
 
   return (

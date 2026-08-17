@@ -1,20 +1,19 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { createPhoto, fetchPhotos } from "@/lib/api/photos";
-import { initialPhotos } from "@/data/initialPhotos";
+import { createPhoto, fetchPhotos, type PhotoUploadInput } from "@/lib/api/photos";
 import type { Photo } from "@/types/photo";
 
 interface PhotosContextValue {
   images: Photo[];
-  addPhoto: (photo: Omit<Photo, "id">) => Promise<void>;
+  addPhoto: (data: PhotoUploadInput) => Promise<void>;
   isLoading: boolean;
 }
 
 const PhotosContext = createContext<PhotosContextValue | null>(null);
 
 export function PhotosProvider({ children }: { children: ReactNode }) {
-  const [images, setImages] = useState<Photo[]>(initialPhotos);
+  const [images, setImages] = useState<Photo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export function PhotosProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         if (!cancelled) {
-          setImages(initialPhotos);
+          setImages([]);
         }
       } finally {
         if (!cancelled) {
@@ -43,19 +42,9 @@ export function PhotosProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const addPhoto = async (photo: Omit<Photo, "id">) => {
-    try {
-      const created = await createPhoto(photo);
-      setImages((prev) => [...prev, created]);
-    } catch {
-      setImages((prev) => [
-        ...prev,
-        {
-          ...photo,
-          id: prev.length > 0 ? Math.max(...prev.map((p) => p.id)) + 1 : 1,
-        },
-      ]);
-    }
+  const addPhoto = async (data: PhotoUploadInput) => {
+    const created = await createPhoto(data);
+    setImages((prev) => [...prev, created]);
   };
 
   return (

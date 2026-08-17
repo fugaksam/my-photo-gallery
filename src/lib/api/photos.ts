@@ -1,9 +1,13 @@
 import type { Photo } from "@/types/photo";
 
-const API_BASE_URL =
+export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
-export type PhotoCreate = Omit<Photo, "id">;
+export type PhotoUploadInput = {
+  title: string;
+  date: string;
+  file: File;
+};
 
 export async function fetchPhotos(): Promise<Photo[]> {
   const res = await fetch(`${API_BASE_URL}/api/photos`);
@@ -21,11 +25,15 @@ export async function fetchPhoto(id: number): Promise<Photo> {
   return res.json();
 }
 
-export async function createPhoto(data: PhotoCreate): Promise<Photo> {
+export async function createPhoto(data: PhotoUploadInput): Promise<Photo> {
+  const body = new FormData();
+  body.append("title", data.title);
+  body.append("date", data.date);
+  body.append("file", data.file);
+
   const res = await fetch(`${API_BASE_URL}/api/photos`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body,
   });
   if (!res.ok) {
     throw new Error(`Failed to create photo: ${res.status}`);

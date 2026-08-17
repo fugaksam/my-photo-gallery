@@ -2,7 +2,7 @@
 
 猫ちゃんの写真を一覧表示するギャラリーアプリです。グリッド表示、詳細ページへの画面遷移、アップロードに対応しています。
 
-一覧・登録のメタデータは別リポジトリの Python API（FastAPI）から取得します。画像本体は当面 `public/images` とブラウザ内 Blob URL です（S3 は未導入）。
+一覧・登録・画像本体は別リポジトリの Python API（FastAPI + SQLite BLOB）から取得します。S3 は未導入です。
 
 ## 技術スタック
 
@@ -20,10 +20,7 @@ src/
 ├── components/
 ├── context/PhotosContext.tsx   # API から一覧取得・登録
 ├── lib/api/photos.ts           # BE 呼び出し
-├── data/initialPhotos.ts       # BE 未起動時のフォールバック
 └── types/photo.ts
-
-public/images/                  # 静的画像アセット
 ```
 
 ## Getting Started
@@ -56,7 +53,7 @@ npm run dev
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ```
 
-BE が停止している場合は `initialPhotos` にフォールバックします。
+BE が停止している場合は一覧は空です。初期画像も含め、表示は DB（`GET /api/photos` と `/api/photos/{id}/image`）のみです。
 
 主な編集ポイント:
 
@@ -76,8 +73,8 @@ npm run lint    # ESLint
 
 ## 現状の範囲
 
-- 対応: BE から一覧取得 / アップロード時のメタデータ POST
-- 未対応: S3 保管、DB 永続化、Blob URL 以外の画像永続化
+- 対応: BE から一覧・詳細画像を取得 / アップロード時に画像本体を DB へ保存
+- 未対応: S3 保管
 
 ## Vercel へのデプロイ
 
