@@ -8,6 +8,7 @@ interface PhotosContextValue {
   images: Photo[];
   addPhoto: (data: PhotoUploadInput) => Promise<void>;
   isLoading: boolean;
+  error: string | null;
 }
 
 const PhotosContext = createContext<PhotosContextValue | null>(null);
@@ -15,6 +16,7 @@ const PhotosContext = createContext<PhotosContextValue | null>(null);
 export function PhotosProvider({ children }: { children: ReactNode }) {
   const [images, setImages] = useState<Photo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -24,10 +26,12 @@ export function PhotosProvider({ children }: { children: ReactNode }) {
         const photos = await fetchPhotos();
         if (!cancelled) {
           setImages(photos);
+          setError(null);
         }
       } catch {
         if (!cancelled) {
           setImages([]);
+          setError("写真の取得に失敗しました。API が起動しているか確認してください。");
         }
       } finally {
         if (!cancelled) {
@@ -48,7 +52,7 @@ export function PhotosProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <PhotosContext.Provider value={{ images, addPhoto, isLoading }}>
+    <PhotosContext.Provider value={{ images, addPhoto, isLoading, error }}>
       {children}
     </PhotosContext.Provider>
   );

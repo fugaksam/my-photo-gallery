@@ -17,8 +17,11 @@ export async function fetchPhotos(): Promise<Photo[]> {
   return res.json();
 }
 
-export async function fetchPhoto(id: number): Promise<Photo> {
+export async function fetchPhoto(id: number): Promise<Photo | null> {
   const res = await fetch(`${API_BASE_URL}/api/photos/${id}`);
+  if (res.status === 404) {
+    return null;
+  }
   if (!res.ok) {
     throw new Error(`Failed to fetch photo: ${res.status}`);
   }

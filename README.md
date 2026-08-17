@@ -53,7 +53,7 @@ npm run dev
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ```
 
-BE が停止している場合は一覧は空です。初期画像も含め、表示は DB（`GET /api/photos` と `/api/photos/{id}/image`）のみです。
+BE が停止している場合は一覧にエラーを表示します。初期画像も含め、表示は DB（`GET /api/photos` と `/api/photos/{id}` / `/api/photos/{id}/image`）のみです。
 
 主な編集ポイント:
 

@@ -5,10 +5,18 @@ import styled from "styled-components";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { GalleryHeader } from "@/components/gallery/GalleryHeader";
 import { UploadModal } from "@/components/modals/UploadModal";
-import { usePhotos } from "@/context/PhotosContext";
+import { PhotosProvider, usePhotos } from "@/context/PhotosContext";
 
 export default function Home() {
-  const { images, addPhoto } = usePhotos();
+  return (
+    <PhotosProvider>
+      <HomeContent />
+    </PhotosProvider>
+  );
+}
+
+function HomeContent() {
+  const { images, addPhoto, isLoading, error } = usePhotos();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -53,7 +61,13 @@ export default function Home() {
   return (
     <AppContainer>
       <GalleryHeader onUploadClick={() => setIsUploadOpen(true)} />
-      <GalleryGrid images={images} />
+      {isLoading ? (
+        <StatusText>読み込み中...</StatusText>
+      ) : error ? (
+        <StatusText>{error}</StatusText>
+      ) : (
+        <GalleryGrid images={images} />
+      )}
 
       {isUploadOpen && (
         <UploadModal
@@ -75,4 +89,12 @@ const AppContainer = styled.div`
   min-height: 100vh;
   padding: 20px;
   font-family: "Helvetica Neue", Arial, sans-serif;
+`;
+
+const StatusText = styled.p`
+  max-width: 1200px;
+  margin: 80px auto 0;
+  text-align: center;
+  font-size: 16px;
+  color: #aaa;
 `;
