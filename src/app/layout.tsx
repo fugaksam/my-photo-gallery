@@ -1,17 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { PhotosProvider } from "@/context/PhotosContext";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "画像一覧",
@@ -24,10 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>
-        <PhotosProvider>{children}</PhotosProvider>
-      </body>
+    <html lang="ja">
+      <body>{children}</body>
     </html>
   );
 }

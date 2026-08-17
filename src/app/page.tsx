@@ -5,11 +5,18 @@ import styled from "styled-components";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { GalleryHeader } from "@/components/gallery/GalleryHeader";
 import { UploadModal } from "@/components/modals/UploadModal";
-import { usePhotos } from "@/context/PhotosContext";
-import type { Photo } from "@/types/photo";
+import { PhotosProvider, usePhotos } from "@/context/PhotosContext";
 
 export default function Home() {
-  const { images, addPhoto } = usePhotos();
+  return (
+    <PhotosProvider>
+      <HomeContent />
+    </PhotosProvider>
+  );
+}
+
+function HomeContent() {
+  const { images, addPhoto, isLoading, error } = usePhotos();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -26,7 +33,7 @@ export default function Home() {
     setNewTitle("");
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!newTitle.trim()) {
       alert("タイトルを入力してください");
       return;
@@ -38,23 +45,29 @@ export default function Home() {
 
     const today = new Date();
     const formattedDate = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, "0")}/${String(today.getDate()).padStart(2, "0")}`;
-    const imageUrl = URL.createObjectURL(selectedFile);
 
-    const newPhoto: Photo = {
-      id: images.length + 1,
-      src: imageUrl,
-      title: newTitle,
-      date: formattedDate,
-    };
-
-    addPhoto(newPhoto);
-    handleCloseUpload();
+    try {
+      await addPhoto({
+        title: newTitle,
+        date: formattedDate,
+        file: selectedFile,
+      });
+      handleCloseUpload();
+    } catch {
+      alert("アップロードに失敗しました。BE が起動しているか確認してください。");
+    }
   };
 
   return (
     <AppContainer>
       <GalleryHeader onUploadClick={() => setIsUploadOpen(true)} />
-      <GalleryGrid images={images} />
+      {isLoading ? (
+        <StatusText>読み込み中...</StatusText>
+      ) : error ? (
+        <StatusText>{error}</StatusText>
+      ) : (
+        <GalleryGrid images={images} />
+      )}
 
       {isUploadOpen && (
         <UploadModal
@@ -76,4 +89,12 @@ const AppContainer = styled.div`
   min-height: 100vh;
   padding: 20px;
   font-family: "Helvetica Neue", Arial, sans-serif;
+`;
+
+const StatusText = styled.p`
+  max-width: 1200px;
+  margin: 80px auto 0;
+  text-align: center;
+  font-size: 16px;
+  color: #aaa;
 `;
