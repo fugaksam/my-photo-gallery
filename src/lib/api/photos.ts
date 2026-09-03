@@ -43,3 +43,15 @@ export async function createPhoto(data: PhotoUploadInput): Promise<Photo> {
   }
   return res.json();
 }
+
+export async function deletePhoto(id: number): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/api/photos/${id}`, {
+    method: "DELETE",
+  });
+  if (res.status === 404) {
+    throw new Error("Photo not found");
+  }
+  if (!res.ok) {
+    throw new Error(`Failed to delete photo: ${res.status}`);
+  }
+}

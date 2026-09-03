@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import styled from "styled-components";
 import { PhotoDetail } from "@/components/photos/PhotoDetail";
-import { fetchPhoto } from "@/lib/api/photos";
+import { deletePhoto, fetchPhoto } from "@/lib/api/photos";
 import type { Photo } from "@/types/photo";
 
 type LoadState = "loading" | "ready" | "notfound" | "error";
@@ -40,8 +40,10 @@ export default function PhotoDetailPage() {
 }
 
 function PhotoDetailLoader({ id }: { id: number }) {
+  const router = useRouter();
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [loadState, setLoadState] = useState<LoadState>("loading");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,6 +75,24 @@ function PhotoDetailLoader({ id }: { id: number }) {
     };
   }, [id]);
 
+  const handleDelete = async () => {
+    if (!photo || isDeleting) {
+      return;
+    }
+    if (!window.confirm(`「${photo.title}」を削除しますか？`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deletePhoto(id);
+      router.push("/");
+    } catch {
+      alert("削除に失敗しました。API が起動しているか確認してください。");
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <PageContainer>
       {loadState === "loading" && <Message>読み込み中...</Message>}
@@ -88,7 +108,9 @@ function PhotoDetailLoader({ id }: { id: number }) {
           <BackLink href="/">← 一覧へ戻る</BackLink>
         </NotFound>
       )}
-      {loadState === "ready" && photo && <PhotoDetail photo={photo} />}
+      {loadState === "ready" && photo && (
+        <PhotoDetail photo={photo} onDelete={handleDelete} isDeleting={isDeleting} />
+      )}
     </PageContainer>
   );
 }

@@ -6,9 +6,11 @@ import type { Photo } from "@/types/photo";
 
 interface PhotoDetailProps {
   photo: Photo;
+  onDelete: () => void;
+  isDeleting?: boolean;
 }
 
-export function PhotoDetail({ photo }: PhotoDetailProps) {
+export function PhotoDetail({ photo, onDelete, isDeleting = false }: PhotoDetailProps) {
   return (
     <Container>
       <BackLink href="/">← 一覧へ戻る</BackLink>
@@ -18,6 +20,9 @@ export function PhotoDetail({ photo }: PhotoDetailProps) {
       <Info>
         <Title>{photo.title}</Title>
         <DateText>撮影日: {photo.date}</DateText>
+        <DeleteBtn type="button" onClick={onDelete} disabled={isDeleting}>
+          {isDeleting ? "削除中..." : "削除する"}
+        </DeleteBtn>
       </Info>
     </Container>
   );
@@ -70,7 +75,27 @@ const Title = styled.h1`
 `;
 
 const DateText = styled.p`
-  margin: 0;
+  margin: 0 0 24px 0;
   font-size: 14px;
   color: #aaa;
+`;
+
+const DeleteBtn = styled.button`
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `;
