@@ -9,6 +9,11 @@ export type PhotoUploadInput = {
   file: File;
 };
 
+export type PhotoUpdateInput = {
+  title: string;
+  description: string;
+};
+
 export async function fetchPhotos(): Promise<Photo[]> {
   const res = await fetch(`${API_BASE_URL}/api/photos`);
   if (!res.ok) {
@@ -40,6 +45,29 @@ export async function createPhoto(data: PhotoUploadInput): Promise<Photo> {
   });
   if (!res.ok) {
     throw new Error(`Failed to create photo: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function updatePhoto(
+  id: number,
+  data: PhotoUpdateInput,
+): Promise<Photo> {
+  const res = await fetch(`${API_BASE_URL}/api/photos/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: data.title,
+      description: data.description,
+    }),
+  });
+  if (res.status === 404) {
+    throw new Error("Photo not found");
+  }
+  if (!res.ok) {
+    throw new Error(`Failed to update photo: ${res.status}`);
   }
   return res.json();
 }

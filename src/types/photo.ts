@@ -3,4 +3,5 @@ export interface Photo {
   src: string;
   title: string;
   date: string;
+  description: string;
 }

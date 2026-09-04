@@ -5,7 +5,12 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import styled from "styled-components";
 import { PhotoDetail } from "@/components/photos/PhotoDetail";
-import { deletePhoto, fetchPhoto } from "@/lib/api/photos";
+import {
+  deletePhoto,
+  fetchPhoto,
+  updatePhoto,
+  type PhotoUpdateInput,
+} from "@/lib/api/photos";
 import type { Photo } from "@/types/photo";
 
 type LoadState = "loading" | "ready" | "notfound" | "error";
@@ -43,6 +48,7 @@ function PhotoDetailLoader({ id }: { id: number }) {
   const router = useRouter();
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [loadState, setLoadState] = useState<LoadState>("loading");
+  const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -74,6 +80,23 @@ function PhotoDetailLoader({ id }: { id: number }) {
       cancelled = true;
     };
   }, [id]);
+
+  const handleSave = async (data: PhotoUpdateInput) => {
+    if (!photo || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const updated = await updatePhoto(id, data);
+      setPhoto(updated);
+    } catch {
+      alert("保存に失敗しました。API が起動しているか確認してください。");
+      throw new Error("save failed");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!photo || isDeleting) {
@@ -109,7 +132,13 @@ function PhotoDetailLoader({ id }: { id: number }) {
         </NotFound>
       )}
       {loadState === "ready" && photo && (
-        <PhotoDetail photo={photo} onDelete={handleDelete} isDeleting={isDeleting} />
+        <PhotoDetail
+          photo={photo}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          isSaving={isSaving}
+          isDeleting={isDeleting}
+        />
       )}
     </PageContainer>
   );
