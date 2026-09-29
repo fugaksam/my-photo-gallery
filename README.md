@@ -1,8 +1,8 @@
 # my-photo-gallery
 
-猫ちゃんの写真を一覧表示するギャラリーアプリです。グリッド表示、詳細ページへの画面遷移、アップロードに対応しています。
+猫ちゃんの写真を一覧表示するギャラリーアプリです。グリッド表示、詳細ページへの画面遷移、アップロード、アルバム機能に対応しています。
 
-一覧・登録・画像本体は別リポジトリの Python API（FastAPI + SQLite BLOB）から取得します。
+一覧・登録・画像本体・アルバムは別リポジトリの Python API（FastAPI + SQLite BLOB）から取得します。
 
 ## 技術スタック
 
@@ -16,11 +16,16 @@ src/
 ├── app/
 │   ├── layout.tsx
 │   ├── page.tsx
-│   └── photos/[id]/page.tsx
+│   ├── photos/[id]/page.tsx
+│   └── albums/[id]/page.tsx
 ├── components/
-├── context/PhotosContext.tsx   # API から一覧取得・登録
-├── lib/api/photos.ts           # BE 呼び出し
-└── types/photo.ts
+├── context/
+│   ├── PhotosContext.tsx
+│   └── AlbumsContext.tsx
+├── lib/api/
+│   ├── photos.ts
+│   └── albums.ts
+└── types/
 ```
 
 ## Getting Started
@@ -57,10 +62,11 @@ BE が停止している場合は一覧にエラーを表示します。初期�
 
 主な編集ポイント:
 
-- API client: `src/lib/api/photos.ts`
-- 共有 state: `src/context/PhotosContext.tsx`
+- API client: `src/lib/api/photos.ts` / `src/lib/api/albums.ts`
+- 共有 state: `src/context/PhotosContext.tsx` / `src/context/AlbumsContext.tsx`
 - 一覧: `src/app/page.tsx`
-- 詳細: `src/app/photos/[id]/page.tsx`
+- 写真詳細: `src/app/photos/[id]/page.tsx`
+- アルバム詳細: `src/app/albums/[id]/page.tsx`
 
 ## Scripts
 
@@ -73,7 +79,7 @@ npm run lint    # ESLint
 
 ## 現状の範囲
 
-- 対応: BE から一覧・詳細画像を取得 / アップロード時に画像本体を DB へ保存 / 詳細画面から削除・タイトルと説明の編集
+- 対応: BE から一覧・詳細画像を取得 / アップロード時に画像本体を DB へ保存 / 詳細画面から削除・タイトルと説明の編集 / アルバム作成・一覧・詳細・名前編集
 
 ## Vercel へのデプロイ
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "画像一覧",
+  title: "フォトギャラリー",
   description: "猫ちゃんの写真ギャラリー",
 };
 
